@@ -91,10 +91,10 @@
             <img src="/img/logo.svg" alt="Pykanko Icon" class="w-24"/>
           </a>
           <div class="flex mt-2">
-            <a class="w-4 mr-0.5" href="wulinkg">
+            <a class="w-4 mr-0.5">
               <img src="/img/icon-whatsapp.png" alt="Whats'up Icon" class="w-24"/>
             </a>
-            <a class="w-4" href="wulinkg">
+            <a class="w-4">
               <img src="/img/icon-facebook.png" alt="Facebook Icon" class="w-24"/>
             </a>
 
@@ -128,7 +128,7 @@
                 <a href="#todo" class="hover:underline">728 869 323</a>
               </li>
               <li class="pb-2">
-                <a href="maps" class="hover:underline">
+                <a class="hover:underline">
                   Hala Sportowa <br/>
                   ul. Chorzowska 5 <br/>
                   Gliwice
