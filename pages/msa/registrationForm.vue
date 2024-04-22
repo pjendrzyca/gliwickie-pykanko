@@ -18,6 +18,7 @@ const submit = async () => {
     club,
     shirtSize,
     wantMeal,
+    individualReviewRequest,
   } = selection.value;
 
   const config = useRuntimeConfig();
@@ -38,6 +39,7 @@ const submit = async () => {
       shirt_size: idx === 0 ? shirtSize : null,
       meal_opt_in: wantMeal,
       event_name: tournament,
+      review_request: individualReviewRequest,
       player1: name,
       player2: selectedCategory.partner,
       category: selectedCategory.name,
@@ -63,6 +65,7 @@ const selection = ref({
   wantShirt: false,
   wantMeal: false,
   termsAccepted: false,
+  individualReviewRequest: false,
   shirtSize: "",
   city: "",
   club: "",
@@ -402,6 +405,21 @@ let tournaments = reactive([
               >regulaminem</a
             >
             turnieju
+          </label>
+        </div>
+
+        <div class="flex items-center">
+          <input
+              class=""
+              id="individualReviewRequest"
+              type="checkbox"
+              @change="selection.individualReviewRequest = $event.target.checked"
+          />
+          <label
+              class="block text-gray-700 text-sm font-bold ml-2"
+              for="individualReviewRequest"
+          >
+            Nie spełniam wymogów regulaminu, proszę o indywidualne rozpatrzenie zgłoszenia
           </label>
         </div>
 
