@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   multiTenancy: {
     tenantDynamicRoute: "site",
     rootDomains: ["localhost", "gliwickie-pykanko.pl"],
-    sites: ["msa", "testmsa"],
+    sites: ["msa",],
   },
   googleFonts: {
     families: {

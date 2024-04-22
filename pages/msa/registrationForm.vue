@@ -30,12 +30,12 @@ const submit = async () => {
   );
 
   const { error } = await supabase.from("tournament_registration").insert(
-    Object.values(categories).map((selectedCategory) => ({
+    Object.values(categories).map((selectedCategory, idx) => ({
       email,
       phone,
       city,
       club,
-      shirt_size: shirtSize,
+      shirt_size: idx === 0 ? shirtSize : null,
       meal_opt_in: wantMeal,
       event_name: tournament,
       player1: name,
@@ -62,6 +62,7 @@ const selection = ref({
   categories: {} as any,
   wantShirt: false,
   wantMeal: false,
+  termsAccepted: false,
   shirtSize: "",
   city: "",
   club: "",
@@ -73,11 +74,13 @@ const selectedCategories = computed(() => {
 
 const selectionComplete = computed(() => {
   return (
+    selection.value.termsAccepted &&
     selection.value.name &&
     selection.value.email &&
     selection.value.phone &&
     selection.value.tournament &&
     (selection.value.city || selection.value.club) &&
+    (selection.value.wantShirt ? selection.value.shirtSize : true) &&
     selectedCategories.value.length > 0 &&
     Object.values(selection.value.categories).reduce((acc, category: any) => {
       return acc && (category.double ? category.partner : true);
@@ -87,28 +90,44 @@ const selectionComplete = computed(() => {
 
 let shirtSizes = reactive([
   {
-    name: "XS",
-    label: "XS",
+    label: "Damska - S",
+    name: "WOMAN-S",
   },
   {
-    name: "S",
-    label: "S",
+    label: "Damska - M",
+    name: "WOMAN-M",
   },
   {
-    name: "M",
-    label: "M",
+    label: "Damska - L",
+    name: "WOMAN-L",
   },
   {
-    name: "L",
-    label: "L",
+    label: "Damska - XL",
+    name: "WOMAN-XL",
   },
   {
-    name: "XL",
-    label: "XL",
+    label: "Damska - XXL",
+    name: "WOMAN-XXL",
   },
   {
-    name: "XXL",
-    label: "XXL",
+    label: "Męska - S",
+    name: "MAN-S",
+  },
+  {
+    label: "Męska - M",
+    name: "MAN-M",
+  },
+  {
+    label: "Męska - L",
+    name: "MAN-L",
+  },
+  {
+    label: "Męska - XL",
+    name: "MAN-XL",
+  },
+  {
+    label: "Męska - XXL",
+    name: "MAN-XXL",
   },
 ]);
 
@@ -196,7 +215,9 @@ let tournaments = reactive([
   <section
     class="shadow-md rounded-2xl bg-yellow shadow-md rounded px-8 pt-6 pb-8 mb-4"
   >
-    <h1 class="text-[2em] font-body mb-6">Formularz zgłoszeniowy</h1>
+    <div class="mb-6">
+      <h1 class="text-[2em] font-body">Formularz zgłoszeniowy</h1>
+    </div>
 
     <div
       v-if="status.sent"
@@ -365,35 +386,23 @@ let tournaments = reactive([
         <div class="flex items-center">
           <input
             class=""
-            id="wantShirt"
+            id="acceptTerms"
             type="checkbox"
-            @change="selection.wantShirt = $event.target.checked"
+            @change="selection.termsAccepted = $event.target.checked"
           />
           <label
             class="block text-gray-700 text-sm font-bold ml-2"
-            for="wantShirt"
+            for="acceptTerms"
           >
-            Chcę otrzymać okolicznościową koszulkę w cenie 50zł
+            <abbr class="text-coral-100">*</abbr>Oświadczam, że zapoznałem się z
+            <a
+              class="text-blue-200"
+              href="https://pzbad.tournamentsoftware.com/tournament/11D3F3BA-7657-4C28-B449-63728D7BBFFB"
+              target="_blank"
+              >regulaminem</a
+            >
+            turnieju
           </label>
-        </div>
-
-        <div class="flex items-center mt-2" v-if="selection.wantShirt">
-          <label
-            class="block text-gray-700 text-sm font-bold mr-2"
-            for="shirtSize"
-          >
-            <abbr class="text-coral-100">*</abbr>
-            Wybierz rozmiar
-          </label>
-          <select
-            id="shirtSize"
-            @change="selection.shirtSize = $event.target.value"
-          >
-            <option value="" disabled selected hidden></option>
-            <option v-for="size in shirtSizes" :key="size">
-              {{ size.label }}
-            </option>
-          </select>
         </div>
 
         <div class="flex items-center">
@@ -407,8 +416,41 @@ let tournaments = reactive([
             class="block text-gray-700 text-sm font-bold ml-2"
             for="wantMeal"
           >
-            Chcę kupić obiad na turnieju
+            Wyrażam zainteresowanie zakupem ciepłego posiłku w dniu turnieju
           </label>
+        </div>
+
+        <div class="flex items-center">
+          <input
+            class=""
+            id="wantShirt"
+            type="checkbox"
+            @change="selection.wantShirt = $event.target.checked"
+          />
+          <label
+            class="block text-gray-700 text-sm font-bold ml-2"
+            for="wantShirt"
+          >
+            Chciałbym zakupić okolicznościową koszulkę w cenie 50zł
+          </label>
+        </div>
+
+        <div class="flex items-center mt-2" v-if="selection.wantShirt">
+          <label
+            class="block text-gray-700 text-sm font-bold ml-5 mr-2"
+            for="shirtSize"
+          >
+            <abbr class="text-coral-100">*</abbr>Wybierz rozmiar
+          </label>
+          <select
+            id="shirtSize"
+            @change="selection.shirtSize = $event.target.value"
+          >
+            <option value="" disabled selected hidden></option>
+            <option v-for="size in shirtSizes" :key="size">
+              {{ size.label }}
+            </option>
+          </select>
         </div>
       </section>
 
@@ -427,6 +469,17 @@ let tournaments = reactive([
         >
           Wyślij
         </button>
+      </div>
+      <div class="mt-5 text-right">
+        <small>
+          Więcej informacji na temat turnieju dostępne na stronie:
+          <a
+            class="text-blue-200 hover:underline"
+            href="https://pzbad.tournamentsoftware.com/tournament/11D3F3BA-7657-4C28-B449-63728D7BBFFB"
+            target="_blank"
+            >https://pzbad.tournamentsoftware.com</a
+          >
+        </small>
       </div>
     </form>
   </section>
